@@ -1,47 +1,35 @@
-name: ci # 這個名稱會出現在 Status Check 清單
+name: ci
 
 on:
   pull_request:
   push:
-    branches: [main] # main 直推也跑
+    branches: [main]
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
-      # ➤ Check out 專案（預設即放在 $GITHUB_WORKSPACE 根目錄）
       - uses: actions/checkout@v3
-
-      # ➤ Python 3.11
       - uses: actions/setup-python@v4
         with:
           python-version: "3.11"
 
-      # （可選）列出工作目錄，方便除錯
-      - name: Debug list files
-        run: |
-          pwd
-          ls -lah
-          echo ">>> tests dir"
-          tree -a tests || true
-
-      # ➤ 安裝最小依賴（FastAPI / Pydantic / pytest）
       - name: Install deps
         run: |
           python -m pip install --upgrade pip
           pip install fastapi pydantic pytest
 
-      # ➤ 執行 pytest
+      # --- 關鍵區塊：處理 exit code 5 ------------------
       - name: Run pytest
         shell: bash
         run: |
           set -e
           pytest -q || EXIT=$?
-          # 如果沒有測試 (exit 5) 視為成功
           if [ "${EXIT:-0}" = "5" ]; then
             echo "No tests collected – treating as success"
             exit 0
           else
             exit ${EXIT:-0}
           fi
+      # ------------------------------------------------
