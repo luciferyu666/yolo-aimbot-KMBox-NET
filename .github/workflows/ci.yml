@@ -23,6 +23,8 @@ jobs:
         run: |
           pwd
           ls -lah
+          echo ">>> tests dir"
+          tree -a tests || true
 
       # ➤ 安裝最小依賴（FastAPI / Pydantic / pytest）
       - name: Install deps
