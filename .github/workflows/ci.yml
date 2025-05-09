@@ -8,7 +8,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -20,16 +19,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install fastapi pydantic pytest
 
-      # --- 關鍵區塊：處理 exit code 5 ------------------
-      - name: Run pytest
+      - name: Run pytest (ignore exit-5)
         shell: bash
         run: |
-          set -e
-          pytest -q || EXIT=$?
-          if [ "${EXIT:-0}" = "5" ]; then
-            echo "No tests collected – treating as success"
+          pytest -q || RC=$?
+          if [ "${RC:-0}" = "5" ]; then
+            echo "::warning ::No tests collected – treating as success"
             exit 0
           else
-            exit ${EXIT:-0}
+            exit ${RC:-0}
           fi
-      # ------------------------------------------------
