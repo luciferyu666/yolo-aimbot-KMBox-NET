@@ -8,6 +8,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -19,7 +20,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install fastapi pydantic pytest
 
-      - name: Run pytest (ignore exit-5)
+      - name: Run pytest (allow no tests)
         shell: bash
         run: |
           pytest -q || RC=$?
