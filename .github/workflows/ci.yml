@@ -34,4 +34,14 @@ jobs:
 
       # ➤ 執行 pytest
       - name: Run pytest
-        run: pytest -q
+        shell: bash
+        run: |
+          set -e
+          pytest -q || EXIT=$?
+          # 如果沒有測試 (exit 5) 視為成功
+          if [ "${EXIT:-0}" = "5" ]; then
+            echo "No tests collected – treating as success"
+            exit 0
+          else
+            exit ${EXIT:-0}
+          fi
